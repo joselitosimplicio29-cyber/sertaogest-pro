@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  companyId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id          String     @id @default(cuid())
+  name        String
+  cnpj        String     @unique
+  email       String?
+  phone       String?
+  address     String?
+  description String?
+  status      String     @default("ativo")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  contracts   Contract[]
+  services    Service[]
+  events      Event[]
+  proposals   Proposal[]
+}
+
+model Contract {
+  id          String   @id @default(cuid())
+  name        String
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  value       Float
+  startDate   DateTime
+  endDate     DateTime
+  description String?
+  responsible String?
+  status      String   @default("ativo")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+  type        String?
+  date        DateTime
+  value       Float
+  description String?
+  status      String   @default("pendente")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  company     String?
+  type        String?
+  date        DateTime
+  url         String?
+  description String?
+  status      String   @default("rascunho")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Employee {
+  id          String   @id @default(cuid())
+  name        String
+  cpf         String   @unique
+  email       String?
+  phone       String?
+  role        String
+  department  String
+  salary      Float
+  hireDate    DateTime
+  status      String   @default("ativo")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Income {
+  id            String   @id @default(cuid())
+  origin        String
+  value         Float
+  date          DateTime
+  company       String?
+  description   String?
+  paymentStatus String   @default("pendente")
+  paymentDate   DateTime?
+  paymentMethod String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  type        String
+  value       Float
+  date        DateTime
+  supplier    String?
+  category    String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  name        String
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+  date        DateTime
+  location    String
+  type        String?
+  hasCoverage Boolean  @default(false)
+  price       Float?
+  description String?
+  status      String   @default("planejado")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Equipment {
+  id           String   @id @default(cuid())
+  name         String
+  brand        String?
+  model        String?
+  serialNumber String?
+  category     String
+  purchaseDate DateTime
+  purchaseValue Float
+  status       String   @default("disponível")
+  location     String?
+  responsible  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Proposal {
+  id          String   @id @default(cuid())
+  title       String
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+  content     String?
+  value       Float?
+  status      String   @default("rascunho")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
